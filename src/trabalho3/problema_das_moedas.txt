@@ -1,0 +1,92 @@
+%Autora: Sabrina Eloise Nawcki
+
+%[2,2,2,2,3,2,2,2,2,2,2,2]
+
+pertence_a(V, [V|_]).
+
+pertence_a(V, [_|R]) :-
+    pertence_a(V, R).
+    
+%1) verificar o tamanho da lista
+
+num_elementos([], 0).
+
+num_elementos([_|R], X) :-
+    num_elementos(R, Y),
+    X is Y + 1. 
+    
+%2) 11 elementos iguais 1 diferente  
+
+qtde_elem_repetidos([], 0).
+
+qtde_elem_repetidos([C|R], Q) :- 
+    qtde_elem_repetidos(R, Q2),
+    elem_repetidos(R, X),
+    pertence_a(C, X),
+    Q is Q2 + 1.
+
+qtde_elem_repetidos([_|R], Q) :- 
+    qtde_elem_repetidos(R, Q).
+ 
+qtde_elem_diferentes([], 0).
+
+qtde_elem_diferentes(L, Q) :-
+    qtde_elem_repetidos(L, X),
+    num_elementos(L, Y),
+    Q is Y - X.
+    
+%3) qual é o elemento diferente?
+
+elem_diferentes([], []).
+
+elem_diferentes([C|R], [C|R2]) :-
+    elem_diferentes(R, R2),
+    not(pertence_a(C, R2)),
+    not(pertence_a(C, R)).
+    
+elem_diferentes([C|R], X) :-
+    elem_diferentes(R, X),
+    not(pertence_a(C, X)).
+    
+%4) qual a posição do diferente?
+posicao_elem([V], [V|_], 1).
+
+posicao_elem(V, [V|_], 1).
+
+posicao_elem(V, [_|R], P) :-
+    posicao_elem(V, R, P1),
+    P is P1 + 1.
+
+%5) quais são os elementos iguais?
+elem_repetidos([], []).
+
+elem_repetidos([C|_], [C|_]).
+
+elem_repetidos([C|R], [C|R2]) :-
+    elem_repetidos(R, R2),
+    not(pertence_a(C, R2)),
+    pertence_a(C, R).
+    
+elem_repetidos([_|R], X) :-
+    elem_repetidos(R, X).
+    
+%6) verifica se o diferente é maior ou igual
+
+elem_maior_igual(V, V, "igual").
+
+elem_maior_igual(V, V2, "maior") :-
+    V > V2.
+
+elem_maior_igual(V, V2, "menor") :-
+    V < V2.    
+    
+%dentre 12 moedas 1 delas tem peso diferente
+
+%1) posicao inicial da moeda diferente
+%2) o peso relativo da moeda diferente
+
+moeda_diferente(Moedas, Pos, Peso) :-
+    elem_diferentes(Moedas, [Diferente|_]),
+    posicao_elem(Diferente, Moedas, Pos),
+    elem_repetidos(Moedas, [Repetidos|_]),
+    elem_maior_igual(Diferente, Repetidos, Peso).
